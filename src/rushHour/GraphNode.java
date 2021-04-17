@@ -43,7 +43,7 @@ public class GraphNode {
                             if (compare2[j] == '.') {
                                 movedCar = compare1[j];
                                 if(!checkDode) {
-                                    if (compare2[j + 1] == movedCar) {
+                                    if (j != 5 && compare2[j + 1] == movedCar) {
                                         dir = 'R';
                                         checkDode = true;
                                         break;
@@ -57,7 +57,7 @@ public class GraphNode {
                             if (compare2[j] != '.') {
                                 movedCar = compare2[j];
                                 if(!checkDode) {
-                                    if (compare1[j + 1] == movedCar) {
+                                    if (j != 5 && compare1[j + 1] == movedCar) {
                                         dir = 'L';
                                         checkDode = true;
                                         break;
