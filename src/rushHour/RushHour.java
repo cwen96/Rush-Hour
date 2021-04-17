@@ -1,4 +1,4 @@
-package AStar;
+package rushHour;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.io.File;
@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.*;
 
 
-public class RushHour2 {
+public class RushHour {
     private static final int MAX_LENGTH = 6;
     private static final int MAX_HEIGHT = 6;
     private static final int SOLVED_X_COORD = 5;
@@ -24,7 +24,7 @@ public class RushHour2 {
     private Queue<GraphNode> queue = new LinkedList<>();
 
 
-    public RushHour2 (String fileName) {
+    public RushHour (String fileName) {
         readInFile(fileName);
     }
 
@@ -230,7 +230,7 @@ public class RushHour2 {
 
     // Test functions here.
     public static void main(String[] args) throws FileNotFoundException{
-        RushHour2 game = new RushHour2("A00.txt");
+        RushHour game = new RushHour("A00.txt");
         //System.out.println(game.board);
         game.BFS();
     }
