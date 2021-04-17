@@ -113,7 +113,7 @@ public class RushHour {
 
         }
         else {
-            next.appendMoves(next.boardDiff(next.getBoard(), prev.getBoard()));
+            //next.appendMoves(next.boardDiff(next.getBoard(), prev.getBoard()));
         }
     }
 
@@ -223,6 +223,10 @@ public class RushHour {
             generateNewNodes(current);
             break;
         }
+        for (Map.Entry<GraphNode, GraphNode> entry : previousState.entrySet()) {
+            System.out.println(entry.getKey().getBoard() + " : " + entry.getValue().getBoard());
+        }
+        System.out.println(previousState);
         System.out.println(previousState.size() + " explored");
     }
 
@@ -231,8 +235,9 @@ public class RushHour {
     // Test functions here.
     public static void main(String[] args) throws FileNotFoundException{
         RushHour game = new RushHour("A00.txt");
+
         //System.out.println(game.board);
-        game.BFS();
+        //game.BFS();
 
 //        ArrayList<String> board1 = new ArrayList<>(6);
 //        ArrayList<String> board2 = new ArrayList<>(6);

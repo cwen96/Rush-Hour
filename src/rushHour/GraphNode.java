@@ -3,20 +3,20 @@ package rushHour;
 import java.util.ArrayList;
 
 public class GraphNode {
-    private ArrayList<String> board;
-    private ArrayList<String> moves;
+    private ArrayList<String> board = new ArrayList<>();
+    private ArrayList<String> moves = new ArrayList<>();
 
     public GraphNode(GraphNode origNode) {
         ArrayList<String> clonedBoard = new ArrayList<>();
         ArrayList<String> clonedMoves = new ArrayList<>();
         for(int i = 0; i < origNode.getBoard().size(); i++) {
             clonedBoard.add(origNode.getBoard().get(i));
+            this.board = clonedBoard;
         }
         for(int i = 0; i < origNode.getMoves().size(); i++) {
             clonedMoves.add(origNode.getMoves().get(i));
+            this.moves = clonedMoves;
         }
-        this.board = clonedBoard;
-        this.moves = clonedMoves;
     }
 
     public GraphNode(ArrayList<String> board, ArrayList<String> prevMoves) {
@@ -26,7 +26,6 @@ public class GraphNode {
                 clonedBoard.add(board.get(i));
             }
             this.board = clonedBoard;
-            this.moves = null;
         }
         else {
             this.moves.add(boardDiff(board, prevMoves));
@@ -35,7 +34,7 @@ public class GraphNode {
     }
 
     public void appendMoves(String move) {
-        this.moves.add(move);
+            this.moves.add(move);
     }
 
     public String boardDiff(ArrayList<String> board1, ArrayList<String> board2) {
