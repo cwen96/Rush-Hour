@@ -18,6 +18,8 @@ public class RushHour2 {
     private ArrayList<String> board = new ArrayList<>(6);
     // Maps a car to its orientation (horizontal or vertical)
     private HashMap<Character, Integer> orientation = new HashMap<>();
+
+    private HashMap<Character, Integer> carLengths = new HashMap<>();
     // Maps the current state to the previous state
     private HashMap<ArrayList<String>, ArrayList<String>> previousState = new HashMap<>();
     // Queue used for BFS
@@ -75,13 +77,18 @@ public class RushHour2 {
     // Returns 0 for horizontal orientation and 1 for vertical orientation.
     // Possible implementation: Horizontal orientation if two characters are consecutive, vertical otherwise.
     public int findOrientation(char c) {
+        if (orientation.containsKey(c)) {
+            return orientation.get(c);
+        }
         for (int i = 0; i < board.size(); i++) {
             for (int j = 0; j < 5; j++) {
                 if (this.board.get(i).toCharArray()[j] == this.board.get(i).toCharArray()[j+1] && this.board.get(i).toCharArray()[j] == c) {
+                    orientation.put(c,0);
                     return 0;
                 }
             }
         }
+        orientation.put(c,1);
         return 1;
     }
 
@@ -91,6 +98,9 @@ public class RushHour2 {
     // Possible implementation: Count the number of times the character occurs in the
     //    entire board ArrayList.
     public int findLength(char c) {
+        if (carLengths.containsKey(c)) {
+            return carLengths.get(c);
+        }
         int count = 0;
         for (int i = 0; i < board.size(); i++) {
             for (int j = 0; j < 6; j++) {
@@ -99,6 +109,7 @@ public class RushHour2 {
                 }
             }
         }
+        carLengths.put(c,count);
         return count;
     }
 
@@ -212,11 +223,10 @@ public class RushHour2 {
             if (isDone(current) && !done) {
                 done = true;
                 numMoves(current);
+                break;
             }
             generateNewNodes(current);
-            break;
         }
-        System.out.println(previousState);
         System.out.println(previousState.size() + " explored");
     }
 
@@ -227,7 +237,6 @@ public class RushHour2 {
         RushHour2 game = new RushHour2("A00.txt");
         game.BFS();
         //System.out.println(game.board);
-        game.BFS();
 
 //        ArrayList<String> board1 = new ArrayList<>(6);
 //        ArrayList<String> board2 = new ArrayList<>(6);
