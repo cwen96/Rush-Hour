@@ -227,7 +227,6 @@ public class RushHour2 {
         RushHour2 game = new RushHour2("A00.txt");
         game.BFS();
         //System.out.println(game.board);
-        game.BFS();
 
 //        ArrayList<String> board1 = new ArrayList<>(6);
 //        ArrayList<String> board2 = new ArrayList<>(6);
