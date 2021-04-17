@@ -20,11 +20,22 @@ public class GraphNode {
     }
 
     public GraphNode(ArrayList<String> board, ArrayList<String> prevMoves) {
+        if (prevMoves == null) {
+            ArrayList<String> clonedBoard = new ArrayList<>();
+            for(int i = 0; i < board.size(); i++) {
+                clonedBoard.add(board.get(i));
+            }
+            this.board = clonedBoard;
+            this.moves = null;
+        }
+        else {
+            this.moves.add(boardDiff(board, prevMoves));
+        }
 
     }
 
-    public GraphNode() {
-
+    public void appendMoves(String move) {
+        this.moves.add(move);
     }
 
     public String boardDiff(ArrayList<String> board1, ArrayList<String> board2) {

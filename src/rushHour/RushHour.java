@@ -234,25 +234,25 @@ public class RushHour {
         //System.out.println(game.board);
         game.BFS();
 
-        ArrayList<String> board1 = new ArrayList<>(6);
-        ArrayList<String> board2 = new ArrayList<>(6);
+//        ArrayList<String> board1 = new ArrayList<>(6);
+//        ArrayList<String> board2 = new ArrayList<>(6);
+//
+//        File file1 = new File("GoalTest copy.txt");
+//        Scanner reader1 = new Scanner(file1);
+//        while (reader1.hasNext()) {
+//            board1.add(reader1.next());
+//        }
+//        reader1.close();
+//
+//        File file2 = new File("GoalTest copy 2.txt");
+//        Scanner reader2 = new Scanner(file2);
+//        while (reader2.hasNext()) {
+//            board2.add(reader2.next());
+//        }
+//        reader2.close();
 
-        File file1 = new File("GoalTest copy.txt");
-        Scanner reader1 = new Scanner(file1);
-        while (reader1.hasNext()) {
-            board1.add(reader1.next());
-        }
-        reader1.close();
-
-        File file2 = new File("GoalTest copy 2.txt");
-        Scanner reader2 = new Scanner(file2);
-        while (reader2.hasNext()) {
-            board2.add(reader2.next());
-        }
-        reader2.close();
-
-        GraphNode graphNode = new GraphNode();
-        System.out.println(graphNode.boardDiff(board1, board2));
+        //GraphNode graphNode = new GraphNode();
+        //System.out.println(graphNode.boardDiff(board1, board2));
 
     }
 
