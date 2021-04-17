@@ -1,5 +1,4 @@
-package AStar;
-
+package RushHour2;
 import java.util.ArrayList;
 
 public class GraphNode {
@@ -31,10 +30,6 @@ public class GraphNode {
             this.moves.add(boardDiff(board, prevMoves));
         }
 
-    }
-
-    public void appendMoves(String move) {
-            this.moves.add(move);
     }
 
     public String boardDiff(ArrayList<String> board1, ArrayList<String> board2) {
