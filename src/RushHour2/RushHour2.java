@@ -1,4 +1,4 @@
-package rushHour;
+package RushHour2;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.io.File;
@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.*;
 
 
-public class RushHour {
+public class RushHour2 {
     private static final int MAX_LENGTH = 6;
     private static final int MAX_HEIGHT = 6;
     private static final int SOLVED_X_COORD = 5;
@@ -19,12 +19,11 @@ public class RushHour {
     // Maps a car to its orientation (horizontal or vertical)
     private HashMap<Character, Integer> orientation = new HashMap<>();
     // Maps the current state to the previous state
-    private HashMap<GraphNode, GraphNode> previousState = new HashMap<>();
+    private HashMap<ArrayList<String>, ArrayList<String>> previousState = new HashMap<>();
     // Queue used for BFS
-    private Queue<GraphNode> queue = new LinkedList<>();
+    private Queue<ArrayList<String>> queue = new LinkedList<>();
 
-
-    public RushHour (String fileName) {
+    public RushHour2 (String fileName) {
         readInFile(fileName);
     }
 
@@ -104,21 +103,15 @@ public class RushHour {
     }
 
 
-    public void seen(GraphNode next, GraphNode prev) {
+    public void seen(ArrayList<String> next, ArrayList<String> prev) {
         if (!previousState.containsKey(next)) {
             previousState.put(next, prev);
             queue.add(next);
         }
-        if (prev == null) {
-
-        }
-        else {
-            //next.appendMoves(next.boardDiff(next.getBoard(), prev.getBoard()));
-        }
     }
 
-    public int numMoves(GraphNode current) {
-        GraphNode prev = previousState.get(current);
+    public int numMoves(ArrayList<String> current) {
+        ArrayList<String> prev = previousState.get(current);
         int moves;
         if (prev == null) {
             moves = 0;
@@ -139,17 +132,17 @@ public class RushHour {
     }
 
     // in given state, returns the entity at a given coordinate, possibly out of bound
-    public char getCar(GraphNode boardState, int row, int column) {
+    public char getCar(ArrayList<String> boardState, int row, int column) {
         if (checkBoundaries(row) && checkBoundaries(column)) {
-            return boardState.getBoard().get(row).charAt(column);
+            return boardState.get(row).charAt(column);
         }
         else {
             return '~';
         }
     }
 
-    public void makeMove(GraphNode current, int row, int column, int orientation, int distance, int rowDirection, int columnDirection, int n) {
-        GraphNode newBoard = new GraphNode(current);
+    public void makeMove(ArrayList<String> current, int row, int column, int orientation, int distance, int rowDirection, int columnDirection, int n) {
+        ArrayList<String> newBoard = new ArrayList<String>(current);
         row += distance * rowDirection;
         column += distance * columnDirection;
         char car = getCar(current, row, column);
@@ -162,18 +155,18 @@ public class RushHour {
         for (int i = 0; i < n; i++) {
             row -= rowDirection;
             column -= columnDirection;
-            char[] tmp = newBoard.getBoard().get(row).toCharArray();
+            char[] tmp = newBoard.get(row).toCharArray();
             tmp[column] = car;
-            newBoard.getBoard().set(row, String.valueOf(tmp));
-            tmp = newBoard.getBoard().get(row + length * rowDirection).toCharArray();
+            newBoard.set(row, String.valueOf(tmp));
+            tmp = newBoard.get(row + length * rowDirection).toCharArray();
             tmp[column + length * columnDirection] = '~';
-            newBoard.getBoard().set(row + length * rowDirection, String.valueOf(tmp));
+            newBoard.set(row + length * rowDirection, String.valueOf(tmp));
             seen(newBoard, current);
             current = newBoard; // comment to combo as one step
         }
     }
 
-    public int countSpaces(GraphNode state, int rowNum, int columnNum, int dRow, int dColumn) {
+    public int countSpaces(ArrayList<String> state, int rowNum, int columnNum, int dRow, int dColumn) {
         int k = 0;
         while (getCar(state, rowNum + k * dRow, columnNum + k * dColumn) == '.') {
             k++;
@@ -181,7 +174,7 @@ public class RushHour {
         return k;
     }
 
-    public void generateNewNodes(GraphNode current) {
+    public void generateNewNodes(ArrayList<String> current) {
         for (int rowNum = 0; rowNum < MAX_HEIGHT; rowNum++) {
             for (int columnNum = 0; columnNum < MAX_LENGTH; columnNum++) {
                 if (getCar(current, rowNum, columnNum) != '.') {
@@ -200,7 +193,7 @@ public class RushHour {
     }
 
     // Chec
-    public boolean isDone(GraphNode currState) {
+    public boolean isDone(ArrayList<String> currState) {
         if (getCar(currState, SOLVED_X_COORD, SOLVED_Y_COORD) == 'X') {
             return true;
         }
@@ -210,21 +203,18 @@ public class RushHour {
     }
 
     public void BFS() {
-        GraphNode initialBoard = new GraphNode(board, null);
+        ArrayList<String> initialBoard = new ArrayList<String>(board);
         seen(initialBoard, null);
         boolean done = false;
 
         while (!queue.isEmpty()) {
-            GraphNode current = queue.remove();
+            ArrayList<String> current = queue.remove();
             if (isDone(current) && !done) {
                 done = true;
                 numMoves(current);
             }
             generateNewNodes(current);
             break;
-        }
-        for (Map.Entry<GraphNode, GraphNode> entry : previousState.entrySet()) {
-            System.out.println(entry.getKey().getBoard() + " : " + entry.getValue().getBoard());
         }
         System.out.println(previousState);
         System.out.println(previousState.size() + " explored");
@@ -234,8 +224,8 @@ public class RushHour {
 
     // Test functions here.
     public static void main(String[] args) throws FileNotFoundException{
-        RushHour game = new RushHour("A00.txt");
-
+        RushHour2 game = new RushHour2("A00.txt");
+        game.BFS();
         //System.out.println(game.board);
         //game.BFS();
 

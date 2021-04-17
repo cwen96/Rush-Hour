@@ -1,4 +1,4 @@
-package rushHour;
+package AStar;
 
 import java.util.ArrayList;
 
