@@ -148,7 +148,7 @@ public class RushHour2 {
             return boardState.get(row).charAt(column);
         }
         else {
-            return '~';
+            return '.';
         }
     }
 
@@ -170,7 +170,7 @@ public class RushHour2 {
             tmp[column] = car;
             newBoard.set(row, String.valueOf(tmp));
             tmp = newBoard.get(row + length * rowDirection).toCharArray();
-            tmp[column + length * columnDirection] = '~';
+            tmp[column + length * columnDirection] = '.';
             newBoard.set(row + length * rowDirection, String.valueOf(tmp));
             seen(newBoard, current);
             current = newBoard; // comment to combo as one step
@@ -205,7 +205,7 @@ public class RushHour2 {
 
     // Chec
     public boolean isDone(ArrayList<String> currState) {
-        if (getCar(currState, SOLVED_X_COORD, SOLVED_Y_COORD) == 'X') {
+        if (getCar(currState, SOLVED_Y_COORD, SOLVED_X_COORD) == 'X') {
             return true;
         }
         else {
@@ -214,7 +214,7 @@ public class RushHour2 {
     }
 
     public void BFS() {
-        ArrayList<String> initialBoard = new ArrayList<String>(board);
+        final ArrayList<String> initialBoard = new ArrayList<String>(board);
         seen(initialBoard, null);
         boolean done = false;
 
