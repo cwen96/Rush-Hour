@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+//Shintaro Morikawa, Chris Wen
 public class Solver {
     public static void solveFromFile(String inputPath, String outputPath) {
         try {

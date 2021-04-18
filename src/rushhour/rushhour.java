@@ -2,6 +2,7 @@ package rushhour;
 import java.io.*;
 import java.util.*;
 
+//Shintaro Morikawa, Chris Wen
 public class rushhour {
     static final int maxLength = 6;
     static final int maxHeight = 6;
