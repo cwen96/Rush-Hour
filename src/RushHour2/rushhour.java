@@ -1,7 +1,6 @@
 package RushHour2;
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class rushhour {
     // classic Rush Hour parameters
@@ -18,13 +17,7 @@ public class rushhour {
     static final char GOAL_CAR = 'X';
     static final char EMPTY = '.';      // empty space, movable into
     static final char VOID = '@';       // represents everything out of bound
-
-    // breaks a string into lines of length N using regex
-    static String prettify(String state) {
-        String EVERY_NTH = "(?<=\\G.{N})".replace("N", String.valueOf(N));
-        return state.replaceAll(EVERY_NTH, "\n");
-    }
-
+    
     // conventional row major 2D-1D index transformation
     static int rc2i(int r, int c) {
         return r * N + c;
@@ -89,7 +82,6 @@ public class rushhour {
         route.add(step);
         System.out.println(route);
         step = "";
-        System.out.println(prettify(current));
         return step;
     }
 
