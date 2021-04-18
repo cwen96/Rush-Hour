@@ -53,8 +53,8 @@ public class TestRushHour
 
 	public static void main(String[] args) {
 		System.out.println("Working Directory = " + System.getProperty("user.dir"));
-		String puzzleName = "A01.txt";
-		String solName = "A01sol.txt";
+		String puzzleName = "D35.txt";
+		String solName = "D35sol.txt";
 		try {
 			Solver.solveFromFile(puzzleName, solName);
 		} catch (Exception e) {
