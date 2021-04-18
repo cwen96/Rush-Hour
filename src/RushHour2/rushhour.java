@@ -3,23 +3,37 @@ import java.io.*;
 import java.util.*;
 
 public class rushhour {
-    static final int N = 6;
-    static final int M = 6;
+    static final int maxLength = 6;
+    static final int maxHeight = 6;
+    //x coordinate of goal state
     static final int xCordGoal = 2;
+    //y coordinate of goal state
     static final int yCordGoal = 5;
     static String init = "";
+    //Collection of horizontal cars
     static String hor = "";
+    //Collection of vertical cars
     static String ver = "";
-    static String longs = "";
-    static String shorts = "";
+    //Collection of size 3 cars
+    static String sizeThree = "";
+    //Collection of size 2 cars
+    static String sizeTwo = "";
+    //Used to store a path to the goal
     static ArrayList<String> route = new ArrayList<>();
+    // Used for BFS
+    static Queue<String> queue = new LinkedList<String>();
+    // Used as edges between states
+    static Map<String,String> pred = new HashMap<String,String>();
+    //represents a letter of the target car
     static final char target = 'X';
+    //represents an unoccupied space
     static final char unoccupied = '.';
+    //represents out of bound
     static final char outOfBound = '@';
 
     // conventional row major 2D-1D index transformation
-    static int rc2i(int r, int c) {
-        return r * N + c;
+    static int rowTrans(int r, int c) {
+        return r * maxLength + c;
     }
 
     // checks if an entity is of a given type
@@ -28,16 +42,17 @@ public class rushhour {
     }
 
     // finds the length of a car
-    static int length(char car) {
-        return isType(car, longs) ? 3 : isType(car, shorts) ? 2 : 0/0;
+    static int findLength(char car) {
+        return isType(car, sizeThree) ? 3 : isType(car, sizeTwo) ? 2 : 0/0;
     }
 
     // in given state, returns the entity at a given coordinate, possibly out of bound
-    static char at(String state, int r, int c) {
-        return (inBound(r, M) && inBound(c, N)) ? state.charAt(rc2i(r, c)) : outOfBound;
+    static char at(String state, int row, int column) {
+        return (inBound(row, maxHeight) && inBound(column, maxLength)) ? state.charAt(rowTrans(row, column)) : outOfBound;
     }
-    static boolean inBound(int v, int max) {
-        return (v >= 0) && (v < max);
+
+    static boolean inBound(int v, int maximum) {
+        return (v >= 0) && (v < maximum);
     }
 
     // checks if a given state is a goal state
@@ -47,21 +62,15 @@ public class rushhour {
 
     // in a given state, starting from given coordinate, toward the given direction,
     // counts how many empty spaces there are (origin inclusive)
-    static int countSpaces(String state, int r, int c, int dr, int dc) {
+    static int countSpaces(String state, int rowNum, int columnNum, int dRow, int dColumn) {
         int k = 0;
-        while (at(state, r + k * dr, c + k * dc) == unoccupied) {
+        while (at(state, rowNum + k * dRow, columnNum + k * dColumn) == unoccupied) {
             k++;
         }
         return k;
     }
 
-    // the predecessor map, maps currentState => previousState
-    static Map<String,String> pred = new HashMap<String,String>();
-    // the breadth first search queue
-    static Queue<String> queue = new LinkedList<String>();
-    // the breadth first search proposal method: if we haven't reached it yet,
-    // (i.e. it has no predecessor), we map the given state and add to queue
-    static void propose(String next, String prev) {
+    static void seen(String next, String prev) {
         if (!pred.containsKey(next)) {
             pred.put(next, prev);
             queue.add(next);
@@ -71,9 +80,9 @@ public class rushhour {
     // the predecessor tracing method, implemented using recursion for brevity;
     // guaranteed no infinite recursion, but may throw StackOverflowError on
     // really long shortest-path trace (which is infeasible in standard Rush Hour)
-    static String trace(String current) {
+    static String numMoves(String current) {
         String prev = pred.get(current);
-        String step = (prev == null) ? "" : trace(prev) + boardDiff(prev, current);
+        String step = (prev == null) ? "" : numMoves(prev) + boardDiff(prev, current);
         System.out.println(step);
         route.add(step);
         System.out.println(route);
@@ -166,35 +175,35 @@ public class rushhour {
         return diff;
     }
 
-    static void slide(String current, int r, int c, String type, int distance, int dr, int dc, int n) {
-        r += distance * dr;
-        c += distance * dc;
-        char car = at(current, r, c);
+    static void makeMove(String current, int row, int column, String type, int distance, int rowDirection, int columnDirection, int n) {
+        row += distance * rowDirection;
+        column += distance * columnDirection;
+        char car = at(current, row, column);
         if (!isType(car, type)) return;
-        final int L = length(car);
+        final int length = findLength(car);
         StringBuilder sb = new StringBuilder(current);
         for (int i = 0; i < n; i++) {
-            r -= dr;
-            c -= dc;
-            sb.setCharAt(rc2i(r, c), car);
-            sb.setCharAt(rc2i(r + L * dr, c + L * dc), unoccupied);
-            propose(sb.toString(), current);
+            row -= rowDirection;
+            column -= columnDirection;
+            sb.setCharAt(rowTrans(row, column), car);
+            sb.setCharAt(rowTrans(row + length * rowDirection, column + length * columnDirection), unoccupied);
+            seen(sb.toString(), current);
             current = sb.toString(); // comment to combo as one step
         }
     }
 
-    static void explore(String current) {
-        for (int r = 0; r < M; r++) {
-            for (int c = 0; c < N; c++) {
+    static void generateNewNodes(String current) {
+        for (int r = 0; r < maxHeight; r++) {
+            for (int c = 0; c < maxLength; c++) {
                 if (at(current, r, c) != unoccupied) continue;
-                int nU = countSpaces(current, r, c, -1, 0);
-                int nD = countSpaces(current, r, c, +1, 0);
-                int nL = countSpaces(current, r, c, 0, -1);
-                int nR = countSpaces(current, r, c, 0, +1);
-                slide(current, r, c, ver, nU, -1, 0, nU + nD - 1);
-                slide(current, r, c, ver, nD, +1, 0, nU + nD - 1);
-                slide(current, r, c, hor, nL, 0, -1, nL + nR - 1);
-                slide(current, r, c, hor, nR, 0, +1, nL + nR - 1);
+                int upSpaces = countSpaces(current, r, c, -1, 0);
+                int downSpaces = countSpaces(current, r, c, +1, 0);
+                int leftSpaces = countSpaces(current, r, c, 0, -1);
+                int rightSpaces = countSpaces(current, r, c, 0, +1);
+                makeMove(current, r, c, ver, upSpaces, -1, 0, upSpaces + downSpaces - 1);
+                makeMove(current, r, c, ver, downSpaces, +1, 0, upSpaces + downSpaces - 1);
+                makeMove(current, r, c, hor, leftSpaces, 0, -1, leftSpaces + rightSpaces - 1);
+                makeMove(current, r, c, hor, rightSpaces, 0, +1, leftSpaces + rightSpaces - 1);
             }
         }
     }
@@ -230,25 +239,25 @@ public class rushhour {
                         if(j != 5 && board[i][j+1] == car){
                             hor += car;
                             if(j != 4 && board[i][j+2] != car) {
-                                shorts += car;
+                                sizeTwo += car;
                             }
                             if(j != 4 && board[i][j+2] == car) {
-                                longs += car;
+                                sizeThree += car;
                             }
                             if(j == 4 && board[i][j+1] == car) {
-                                shorts += car;
+                                sizeTwo += car;
                             }
                         }
                         if(i != 5 && board[i+1][j] == car) {
                             ver += car;
                             if(i != 4 && board[i+2][j] != car) {
-                                shorts += car;
+                                sizeTwo += car;
                             }
                             if(i != 4 && board[i+2][j] == car) {
-                                longs += car;
+                                sizeThree += car;
                             }
                             if(i == 4 && board[i+1][j] == car) {
-                                shorts += car;
+                                sizeTwo += car;
                             }
                         }
                     }
@@ -264,16 +273,16 @@ public class rushhour {
     }
 
     public static void BFS() throws Exception {
-        propose(init, null);
-        boolean solved = false;
+        seen(init, null);
+        boolean done = false;
         while (!queue.isEmpty()) {
             String current = queue.remove();
-            if (isGoal(current) && !solved) {
-                solved = true;
-                trace(current);
-                break; // comment to continue exploring entire space
+            if (isGoal(current) && !done) {
+                done = true;
+                numMoves(current);
+                break;
             }
-            explore(current);
+            generateNewNodes(current);
         }
         System.out.println(pred.size() + " explored");
     }
