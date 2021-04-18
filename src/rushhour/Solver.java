@@ -3,7 +3,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-//Shintaro Morikawa, Chris Wen
+//Shintaro Morikawa ID:301435113
+//Chris Wen ID:301251957
 public class Solver {
     public static void solveFromFile(String inputPath, String outputPath) {
         try {
