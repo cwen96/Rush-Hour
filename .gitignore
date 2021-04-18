@@ -30,3 +30,4 @@ gradle/
 gradlew
 *.bat
 .out/
+.DS_Store
