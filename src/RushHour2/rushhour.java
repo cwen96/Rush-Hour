@@ -1,7 +1,6 @@
 package RushHour2;
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class rushhour {
     // classic Rush Hour parameters
@@ -15,29 +14,10 @@ public class rushhour {
     static String longs = "";
     static String shorts = "";
     static ArrayList<String> route = new ArrayList<>();
-    // the transcription of the 93 moves, total 24132 configurations problem
-    // from http://cs.ulb.ac.be/~fservais/rushhour/index.php?window_size=20&offset=0
-//    static final String INITIAL =   "A..OOO" +
-//            "A..B.P" +
-//            "XX.BCP" +
-//            "QQQ.CP" +
-//            "..D.EE" +
-//            "FFDGG.";
-//
-//    static final String HORZS = "OXQEGF";  // horizontal-sliding cars
-//    static final String VERTS = "ABCP";   // vertical-sliding cars
-//    static final String LONGS = "OPQ";   // length 3 cars
-//    static final String SHORTS = "AXBCDEFG"; // length 2 cars
     static final char GOAL_CAR = 'X';
     static final char EMPTY = '.';      // empty space, movable into
     static final char VOID = '@';       // represents everything out of bound
-
-    // breaks a string into lines of length N using regex
-    static String prettify(String state) {
-        String EVERY_NTH = "(?<=\\G.{N})".replace("N", String.valueOf(N));
-        return state.replaceAll(EVERY_NTH, "\n");
-    }
-
+    
     // conventional row major 2D-1D index transformation
     static int rc2i(int r, int c) {
         return r * N + c;
@@ -95,14 +75,6 @@ public class rushhour {
     // the predecessor tracing method, implemented using recursion for brevity;
     // guaranteed no infinite recursion, but may throw StackOverflowError on
     // really long shortest-path trace (which is infeasible in standard Rush Hour)
-//    static int trace(String current) {
-//        String prev = pred.get(current);
-//        int step = (prev == null) ? 0 : trace(prev) + 1;
-//        System.out.println(step);
-//        System.out.println(prettify(current));
-//        return step;
-//    }
-
     static String trace(String current) {
         String prev = pred.get(current);
         String step = (prev == null) ? "" : trace(prev) + boardDiff(prev, current);
@@ -110,7 +82,6 @@ public class rushhour {
         route.add(step);
         System.out.println(route);
         step = "";
-        System.out.println(prettify(current));
         return step;
     }
 
@@ -199,18 +170,6 @@ public class rushhour {
         return diff;
     }
 
-    // in a given state, from a given origin coordinate, attempts to find a car of a given type
-    // at a given distance in a given direction; if found, slide it in the opposite direction
-    // one spot at a time, exactly n times, proposing those states to the breadth first search
-    //
-    // e.g.
-    //    direction = -->
-    //    __n__
-    //   /     \
-    //   ..o....c
-    //      \___/
-    //      distance
-    //
     static void slide(String current, int r, int c, String type, int distance, int dr, int dc, int n) {
         r += distance * dr;
         c += distance * dc;
@@ -228,18 +187,6 @@ public class rushhour {
         }
     }
 
-    // explores a given state; searches for next level states in the breadth first search
-    //
-    // Let (r,c) be the intersection point of this cross:
-    //
-    //     @       nU = 3     '@' is not a car, 'B' and 'X' are of the wrong type;
-    //     .       nD = 1     only '2' can slide to the right up to 5 spaces
-    //   2.....B   nL = 2
-    //     X       nR = 4
-    //
-    // The n? counts how many spaces are there in a given direction, origin inclusive.
-    // Cars matching the type will then slide on these "alleys".
-    //
     static void explore(String current) {
         for (int r = 0; r < M; r++) {
             for (int c = 0; c < N; c++) {
@@ -279,10 +226,8 @@ public class rushhour {
             }
 
 
-            //if(car != board[i][j] && board[i][j] != '.'){
             for(int i = 0; i < board.length; i++){
                 for(int j = 0; j < board[i].length; j++){
-//                    if(car != board[i][j] && board[i][j] != '.'){
                     String s = String.valueOf(board[i][j]);
                     if(!hor.contains(s) && !ver.contains(s) && board[i][j] != '.'){
                         car = board[i][j];
@@ -347,4 +292,5 @@ public class rushhour {
 //        propose(INITIAL, null);
         initial.BFS();
     }
+
 }
