@@ -15,9 +15,9 @@ public class rushhour {
     static String shorts = "";
     static ArrayList<String> route = new ArrayList<>();
     static final char GOAL_CAR = 'X';
-    static final char EMPTY = '.';      // empty space, movable into
+    static final char unoccupied = '.';      // empty space, movable into
     static final char VOID = '@';       // represents everything out of bound
-    
+
     // conventional row major 2D-1D index transformation
     static int rc2i(int r, int c) {
         return r * N + c;
@@ -53,7 +53,7 @@ public class rushhour {
     // counts how many empty spaces there are (origin inclusive)
     static int countSpaces(String state, int r, int c, int dr, int dc) {
         int k = 0;
-        while (at(state, r + k * dr, c + k * dc) == EMPTY) {
+        while (at(state, r + k * dr, c + k * dc) == unoccupied) {
             k++;
         }
         return k;
@@ -181,7 +181,7 @@ public class rushhour {
             r -= dr;
             c -= dc;
             sb.setCharAt(rc2i(r, c), car);
-            sb.setCharAt(rc2i(r + L * dr, c + L * dc), EMPTY);
+            sb.setCharAt(rc2i(r + L * dr, c + L * dc), unoccupied);
             propose(sb.toString(), current);
             current = sb.toString(); // comment to combo as one step
         }
@@ -190,7 +190,7 @@ public class rushhour {
     static void explore(String current) {
         for (int r = 0; r < M; r++) {
             for (int c = 0; c < N; c++) {
-                if (at(current, r, c) != EMPTY) continue;
+                if (at(current, r, c) != unoccupied) continue;
                 int nU = countSpaces(current, r, c, -1, 0);
                 int nD = countSpaces(current, r, c, +1, 0);
                 int nL = countSpaces(current, r, c, 0, -1);
@@ -284,13 +284,6 @@ public class rushhour {
 
     public static ArrayList<String> getRoute() {
         return route;
-    }
-
-    public static void main(String[] args) throws Exception {
-        rushhour initial = new rushhour("A00.txt");
-        // typical queue-based breadth first search implementation
-//        propose(INITIAL, null);
-        initial.BFS();
     }
 
 }
