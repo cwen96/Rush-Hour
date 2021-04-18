@@ -8,7 +8,6 @@ public class Solver {
         try {
             rushhour game = new rushhour(inputPath);
             game.BFS();
-            System.out.println(game.getRoute());
             createFile(outputPath);
             for (int i = 1; i < game.getRoute().size(); i++) {
                 writeMoveToFile(outputPath, game.getRoute().get(i));

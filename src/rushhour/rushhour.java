@@ -1,5 +1,4 @@
 package rushhour;
-import javax.swing.text.Style;
 import java.io.*;
 import java.util.*;
 
@@ -33,39 +32,111 @@ public class rushhour {
     //represents out of bound
     static final char outOfBound = '@';
 
-    static int rowTrans(int r, int c) {
-        return r * maxLength + c;
+    //rushhour constructor: Add cars to hor, ver, sizeThree, and sizeTwo collections
+    /**
+     * @param fileName creates a rushhour game from fileName's board (i.e. "A00.txt")
+     * @throws IOException if the file cannot be read by the reader. (caught inside function)
+     */
+    public rushhour(String fileName) {
+        try {
+
+            //Read the text file provided
+            String line = "";
+            File f = new File(fileName);
+            FileReader reader = new FileReader(f);
+            BufferedReader br = new BufferedReader(reader);
+            while((line = br.readLine())!=null)
+            {
+                init += line;
+            }
+
+            //Create an initial board from the text file provided
+            char car = ' ';
+            Scanner scan = new Scanner(f);
+            char[][] board = new char [6][6];
+            String boardcontent;
+            for (int i = 0; i < 6; i++) {
+                boardcontent = scan.nextLine();
+                for (int j = 0; j < 6; j++) {
+                    board[i][j] = boardcontent.charAt(j);
+                }
+            }
+
+            //Here, checks if car is horizontal or vertical and if size 3 or size 2
+            for(int i = 0; i < board.length; i++){
+                for(int j = 0; j < board[i].length; j++){
+                    String s = String.valueOf(board[i][j]);
+                    if(!hor.contains(s) && !ver.contains(s) && board[i][j] != '.'){
+                        car = board[i][j];
+                        if(j != 5 && board[i][j+1] == car){
+                            hor += car;
+                            if(j != 4 && board[i][j+2] != car) {
+                                sizeTwo += car;
+                            }
+                            if(j != 4 && board[i][j+2] == car) {
+                                sizeThree += car;
+                            }
+                            if(j == 4 && board[i][j+1] == car) {
+                                sizeTwo += car;
+                            }
+                        }
+                        if(i != 5 && board[i+1][j] == car) {
+                            ver += car;
+                            if(i != 4 && board[i+2][j] != car) {
+                                sizeTwo += car;
+                            }
+                            if(i != 4 && board[i+2][j] == car) {
+                                sizeThree += car;
+                            }
+                            if(i == 4 && board[i+1][j] == car) {
+                                sizeTwo += car;
+                            }
+                        }
+                    }
+                }
+            }
+
+            scan.close();
+
+        } catch (IOException e) {
+            System.out.println("Error reading file.");
+            e.printStackTrace();
+        }
+    }
+
+    static int rowTrans(int row, int column) {
+        return row * maxLength + column;
     }
 
     //Verifies the car size
-    static boolean isType(char entity, String type) {
+    static boolean checkOrientation(char entity, String type) {
         return type.indexOf(entity) != -1;
     }
 
     //Calculates the size of a car
     static int findLength(char car) {
-        return isType(car, sizeThree) ? 3 : isType(car, sizeTwo) ? 2 : 0/0;
+        return checkOrientation(car, sizeThree) ? 3 : checkOrientation(car, sizeTwo) ? 2 : 0/0;
     }
 
     //Get a car that is residing at the provided coordinates in the provided state
-    static char at(String state, int row, int column) {
-        return (inBound(row, maxHeight) && inBound(column, maxLength)) ? state.charAt(rowTrans(row, column)) : outOfBound;
+    static char getCar(String state, int row, int column) {
+        return (checkBoundaries(row, maxHeight) && checkBoundaries(column, maxLength)) ? state.charAt(rowTrans(row, column)) : outOfBound;
     }
 
-    static boolean inBound(int v, int maximum) {
+    static boolean checkBoundaries(int v, int maximum) {
         return (v >= 0) && (v < maximum);
     }
 
     // checks if a given state is a goal state
     static boolean isGoal(String state) {
-        return at(state, xCordGoal, yCordGoal) == target;
+        return getCar(state, xCordGoal, yCordGoal) == target;
     }
 
     // in a given state, starting from given coordinate, toward the given direction,
     // counts how many empty spaces there are (origin inclusive)
     static int countSpaces(String state, int rowNum, int columnNum, int dRow, int dColumn) {
         int k = 0;
-        while (at(state, rowNum + k * dRow, columnNum + k * dColumn) == unoccupied) {
+        while (getCar(state, rowNum + k * dRow, columnNum + k * dColumn) == unoccupied) {
             k++;
         }
         return k;
@@ -73,6 +144,10 @@ public class rushhour {
 
     //Check if the connection between next and previous was made before
     //If not, connect them together
+    /**
+     * @param next next state of the board
+     * @param previous previous state of the board
+     */
     static void seen(String next, String previous) {
         if (!pred.containsKey(next)) {
             pred.put(next, previous);
@@ -80,8 +155,12 @@ public class rushhour {
         }
     }
 
-    //Trace the original board from the goal state
+    //Recursively traces the original board from the goal state
     //By doing this, a path to the goal state can be generated
+    /**
+     * @param current current state of the board
+     * @return car movement (i.e. AU1, PD1, etc)
+     */
     static String numMoves(String current) {
         String previous = pred.get(current);
         String step = (previous == null) ? "" : numMoves(previous) + boardDiff(previous, current);
@@ -91,6 +170,11 @@ public class rushhour {
     }
 
     //Checks which car was moved in which direction from the previous state
+    /**
+     * @param prev first board that is going to be compared
+     * @param current second board that is going to be compared
+     * @return which car moved and in which direction (i.e. AU1, PD1, etc)
+     */
     static String boardDiff(String prev, String current) {
         String diff = null;
 
@@ -177,11 +261,23 @@ public class rushhour {
     }
 
     //Take in the current state, and move a car for one space
-    static void makeMove(String current, int row, int column, String type, int distance, int rowDirection, int columnDirection, int n) {
+    /**
+     * @param current current state of the board
+     * @param row number of rows to move
+     * @param column number of columns to move
+     * @param orientation orientation of the car (hor (horizontal) or ver (vertical))
+     * @param distance distance to move the car
+     * @param rowDirection y-value to move: +1 for down, -1 for up
+     * @param columnDirection x-value to move: +1 for right, -1 for left
+     * @param n number of board states to generate
+     */
+    static void makeMoves(String current, int row, int column, String orientation, int distance, int rowDirection, int columnDirection, int n) {
         row += distance * rowDirection;
         column += distance * columnDirection;
-        char car = at(current, row, column);
-        if (!isType(car, type)) return;
+        char car = getCar(current, row, column);
+        if (!checkOrientation(car, orientation)) {
+            return;
+        }
         final int length = findLength(car);
         StringBuilder sb = new StringBuilder(current);
         for (int i = 0; i < n; i++) {
@@ -190,108 +286,45 @@ public class rushhour {
             sb.setCharAt(rowTrans(row, column), car);
             sb.setCharAt(rowTrans(row + length * rowDirection, column + length * columnDirection), unoccupied);
             seen(sb.toString(), current);
-            current = sb.toString(); // comment to combo as one step
+            current = sb.toString();
         }
     }
 
     //Create a new state from the current state
+    /**
+     * @param current current state of the board
+     */
     static void generateNewNodes(String current) {
-        for (int r = 0; r < maxHeight; r++) {
-            for (int c = 0; c < maxLength; c++) {
-                if (at(current, r, c) != unoccupied) continue;
-                int upSpaces = countSpaces(current, r, c, -1, 0);
-                int downSpaces = countSpaces(current, r, c, +1, 0);
-                int leftSpaces = countSpaces(current, r, c, 0, -1);
-                int rightSpaces = countSpaces(current, r, c, 0, +1);
-                makeMove(current, r, c, ver, upSpaces, -1, 0, upSpaces + downSpaces - 1);
-                makeMove(current, r, c, ver, downSpaces, +1, 0, upSpaces + downSpaces - 1);
-                makeMove(current, r, c, hor, leftSpaces, 0, -1, leftSpaces + rightSpaces - 1);
-                makeMove(current, r, c, hor, rightSpaces, 0, +1, leftSpaces + rightSpaces - 1);
+        for (int row = 0; row < maxHeight; row++) {
+            for (int column = 0; column < maxLength; column++) {
+                if (getCar(current, row, column) != unoccupied) {
+                    continue;
+                }
+                int upSpaces = countSpaces(current, row, column, -1, 0);
+                int downSpaces = countSpaces(current, row, column, +1, 0);
+                int leftSpaces = countSpaces(current, row, column, 0, -1);
+                int rightSpaces = countSpaces(current, row, column, 0, +1);
+                makeMoves(current, row, column, ver, upSpaces, -1, 0, upSpaces + downSpaces - 1);
+                makeMoves(current, row, column, ver, downSpaces, +1, 0, upSpaces + downSpaces - 1);
+                makeMoves(current, row, column, hor, leftSpaces, 0, -1, leftSpaces + rightSpaces - 1);
+                makeMoves(current, row, column, hor, rightSpaces, 0, +1, leftSpaces + rightSpaces - 1);
             }
         }
     }
 
-    //Add cars to hor, ver, sizeThree, and sizeTwo collections
-    public rushhour(String fileName) throws Exception {
-        try {
 
-            //Read the text file provided
-            String line = "";
-            File f = new File(fileName);
-            FileReader reader = new FileReader(f);
-            BufferedReader br = new BufferedReader(reader);
-            while((line = br.readLine())!=null)
-            {
-                init += line;
-            }
-
-            //Create an initial board from the text file provided
-            char car = ' ';
-            Scanner scan = new Scanner(f);
-            char[][] board = new char [6][6];
-            String boardcontent;
-            for (int i = 0; i < 6; i++) {
-                boardcontent = scan.nextLine();
-                for (int j = 0; j < 6; j++) {
-                    board[i][j] = boardcontent.charAt(j);
-                }
-            }
-
-            //Here, checks if car is horizontal or vertical and if size 3 or size 2
-            for(int i = 0; i < board.length; i++){
-                for(int j = 0; j < board[i].length; j++){
-                    String s = String.valueOf(board[i][j]);
-                    if(!hor.contains(s) && !ver.contains(s) && board[i][j] != '.'){
-                        car = board[i][j];
-                        if(j != 5 && board[i][j+1] == car){
-                            hor += car;
-                            if(j != 4 && board[i][j+2] != car) {
-                                sizeTwo += car;
-                            }
-                            if(j != 4 && board[i][j+2] == car) {
-                                sizeThree += car;
-                            }
-                            if(j == 4 && board[i][j+1] == car) {
-                                sizeTwo += car;
-                            }
-                        }
-                        if(i != 5 && board[i+1][j] == car) {
-                            ver += car;
-                            if(i != 4 && board[i+2][j] != car) {
-                                sizeTwo += car;
-                            }
-                            if(i != 4 && board[i+2][j] == car) {
-                                sizeThree += car;
-                            }
-                            if(i == 4 && board[i+1][j] == car) {
-                                sizeTwo += car;
-                            }
-                        }
-                    }
-                }
-            }
-
-            scan.close();
-
-        } catch (IOException e) {
-            System.out.println("Error reading file.");
-            e.printStackTrace();
-        }
-    }
-
-    public static void BFS() throws Exception {
+    //Breadth first search algorithm to find a solution to the board.
+    public static void BFS() {
         seen(init, null);
         boolean done = false;
         while (!queue.isEmpty()) {
             String current = queue.remove();
             if (isGoal(current) && !done) {
-                done = true;
                 numMoves(current);
                 break;
             }
             generateNewNodes(current);
         }
-        System.out.println(pred.size() + " explored");
     }
 
     //Retrieve an arraylist containing a path to the goal
