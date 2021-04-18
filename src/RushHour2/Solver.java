@@ -12,6 +12,9 @@ public class Solver {
             createFile(outputPath);
             for (int i = 1; i < game.getRoute().size(); i++) {
                 writeMoveToFile(outputPath, game.getRoute().get(i));
+                if (i < game.getRoute().size()-1) {
+                    writeMoveToFile(outputPath, "\n");
+                }
             }
         }
         catch (Exception e) {
@@ -41,7 +44,7 @@ public class Solver {
     public static void writeMoveToFile(String fileName, String contents) throws IOException {
         try {
             FileWriter writer = new FileWriter(fileName, true);
-            writer.write(contents + "\n");
+            writer.write(contents);
             writer.close();
         }
         catch(IOException e) {
