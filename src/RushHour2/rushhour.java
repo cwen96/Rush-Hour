@@ -9,6 +9,7 @@ public class rushhour {
     static final int xCordGoal = 2;
     //y coordinate of goal state
     static final int yCordGoal = 5;
+    //original board
     static String init = "";
     //Collection of horizontal cars
     static String hor = "";
@@ -21,9 +22,9 @@ public class rushhour {
     //Used to store a path to the goal
     static ArrayList<String> route = new ArrayList<>();
     // Used for BFS
-    static Queue<String> queue = new LinkedList<String>();
+    static Queue<String> queue = new LinkedList<>();
     // Used as edges between states
-    static Map<String,String> pred = new HashMap<String,String>();
+    static Map<String,String> pred = new HashMap<>();
     //represents a letter of the target car
     static final char target = 'X';
     //represents an unoccupied space
@@ -31,22 +32,21 @@ public class rushhour {
     //represents out of bound
     static final char outOfBound = '@';
 
-    // conventional row major 2D-1D index transformation
     static int rowTrans(int r, int c) {
         return r * maxLength + c;
     }
 
-    // checks if an entity is of a given type
+    //Verifies the car size
     static boolean isType(char entity, String type) {
         return type.indexOf(entity) != -1;
     }
 
-    // finds the length of a car
+    //Calculates the size of a car
     static int findLength(char car) {
         return isType(car, sizeThree) ? 3 : isType(car, sizeTwo) ? 2 : 0/0;
     }
 
-    // in given state, returns the entity at a given coordinate, possibly out of bound
+    //Get a car that is residing at the provided coordinates in the provided state
     static char at(String state, int row, int column) {
         return (inBound(row, maxHeight) && inBound(column, maxLength)) ? state.charAt(rowTrans(row, column)) : outOfBound;
     }
@@ -70,19 +70,20 @@ public class rushhour {
         return k;
     }
 
-    static void seen(String next, String prev) {
+    //Check if the connection between next and previous was made before
+    //If not, connect them together
+    static void seen(String next, String previous) {
         if (!pred.containsKey(next)) {
-            pred.put(next, prev);
+            pred.put(next, previous);
             queue.add(next);
         }
     }
 
-    // the predecessor tracing method, implemented using recursion for brevity;
-    // guaranteed no infinite recursion, but may throw StackOverflowError on
-    // really long shortest-path trace (which is infeasible in standard Rush Hour)
+    //Trace the original board from the goal state
+    //By doing this, a path to the goal state can be generated
     static String numMoves(String current) {
-        String prev = pred.get(current);
-        String step = (prev == null) ? "" : numMoves(prev) + boardDiff(prev, current);
+        String previous = pred.get(current);
+        String step = (previous == null) ? "" : numMoves(previous) + boardDiff(previous, current);
         System.out.println(step);
         route.add(step);
         System.out.println(route);
@@ -90,6 +91,7 @@ public class rushhour {
         return step;
     }
 
+    //Checks which car was moved in which direction from the previous state
     static String boardDiff(String prev, String current) {
         String diff = null;
 
@@ -175,6 +177,7 @@ public class rushhour {
         return diff;
     }
 
+    //Take in the current state, and move a car for one space
     static void makeMove(String current, int row, int column, String type, int distance, int rowDirection, int columnDirection, int n) {
         row += distance * rowDirection;
         column += distance * columnDirection;
@@ -192,6 +195,7 @@ public class rushhour {
         }
     }
 
+    //Create a new state from the current state
     static void generateNewNodes(String current) {
         for (int r = 0; r < maxHeight; r++) {
             for (int c = 0; c < maxLength; c++) {
@@ -208,8 +212,11 @@ public class rushhour {
         }
     }
 
+    //Add cars to hor, ver, sizeThree, and sizeTwo collections
     public rushhour(String fileName) throws Exception {
         try {
+
+            //Read the text file provided
             String line = "";
             File f = new File(fileName);
             FileReader reader = new FileReader(f);
@@ -219,6 +226,7 @@ public class rushhour {
                 init += line;
             }
 
+            //Create an initial board from the text file provided
             char car = ' ';
             Scanner scan = new Scanner(f);
             char[][] board = new char [6][6];
@@ -230,7 +238,7 @@ public class rushhour {
                 }
             }
 
-
+            //Here, checks if car is horizontal or vertical and if size 3 or size 2
             for(int i = 0; i < board.length; i++){
                 for(int j = 0; j < board[i].length; j++){
                     String s = String.valueOf(board[i][j]);
@@ -287,6 +295,7 @@ public class rushhour {
         System.out.println(pred.size() + " explored");
     }
 
+    //Retrieve an arraylist containing a path to the goal
     public static ArrayList<String> getRoute() {
         return route;
     }
