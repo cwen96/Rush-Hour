@@ -5,8 +5,8 @@ import java.util.*;
 public class rushhour {
     static final int N = 6;
     static final int M = 6;
-    static final int XCORGOAL = 2;
-    static final int YCORGOAL = 5;
+    static final int xCordGoal = 2;
+    static final int yCordGoal = 5;
     static String init = "";
     static String hor = "";
     static String ver = "";
@@ -42,7 +42,7 @@ public class rushhour {
 
     // checks if a given state is a goal state
     static boolean isGoal(String state) {
-        return at(state, XCORGOAL, YCORGOAL) == target;
+        return at(state, xCordGoal, yCordGoal) == target;
     }
 
     // in a given state, starting from given coordinate, toward the given direction,
