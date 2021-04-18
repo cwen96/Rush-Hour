@@ -14,6 +14,7 @@ public class rushhour {
     static String ver = "";
     static String longs = "";
     static String shorts = "";
+    static ArrayList<String> route = new ArrayList<>();
     // the transcription of the 93 moves, total 24132 configurations problem
     // from http://cs.ulb.ac.be/~fservais/rushhour/index.php?window_size=20&offset=0
 //    static final String INITIAL =   "A..OOO" +
@@ -104,8 +105,10 @@ public class rushhour {
 
     static String trace(String current) {
         String prev = pred.get(current);
-        String step = (prev == null) ? "Starting Board" : trace(prev) + boardDiff(prev, current);
+        String step = (prev == null) ? "" : trace(prev) + boardDiff(prev, current);
         System.out.println(step);
+        route.add(step);
+        System.out.println(route);
         step = "";
         System.out.println(prettify(current));
         return step;
@@ -319,10 +322,7 @@ public class rushhour {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        rushhour initial = new rushhour("A00.txt");
-        // typical queue-based breadth first search implementation
-//        propose(INITIAL, null);
+    public static void BFS() throws Exception {
         propose(init, null);
         boolean solved = false;
         while (!queue.isEmpty()) {
@@ -335,5 +335,16 @@ public class rushhour {
             explore(current);
         }
         System.out.println(pred.size() + " explored");
+    }
+
+    public static ArrayList<String> getRoute() {
+        return route;
+    }
+
+    public static void main(String[] args) throws Exception {
+        rushhour initial = new rushhour("A00.txt");
+        // typical queue-based breadth first search implementation
+//        propose(INITIAL, null);
+        initial.BFS();
     }
 }
