@@ -54,11 +54,10 @@ public class Solver {
     }
 
     public static void main(String[] args) throws Exception {
-        rushhour initial = new rushhour("A00.txt");
+//        rushhour initial = new rushhour("A00.txt");
         // typical queue-based breadth first search implementation
 //        propose(INITIAL, null);
-        solveFromFile("A00.txt", "A00Sol.txt");
+        solveFromFile("D34.txt", "D34Sol.txt");
     }
-
 
 }
