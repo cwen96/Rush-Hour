@@ -14,19 +14,7 @@ public class rushhour {
     static String ver = "";
     static String longs = "";
     static String shorts = "";
-    // the transcription of the 93 moves, total 24132 configurations problem
-    // from http://cs.ulb.ac.be/~fservais/rushhour/index.php?window_size=20&offset=0
-//    static final String INITIAL =   "A..OOO" +
-//            "A..B.P" +
-//            "XX.BCP" +
-//            "QQQ.CP" +
-//            "..D.EE" +
-//            "FFDGG.";
-//
-//    static final String HORZS = "OXQEGF";  // horizontal-sliding cars
-//    static final String VERTS = "ABCP";   // vertical-sliding cars
-//    static final String LONGS = "OPQ";   // length 3 cars
-//    static final String SHORTS = "AXBCDEFG"; // length 2 cars
+    static ArrayList<String> route = new ArrayList<>();
     static final char GOAL_CAR = 'X';
     static final char EMPTY = '.';      // empty space, movable into
     static final char VOID = '@';       // represents everything out of bound
@@ -94,18 +82,12 @@ public class rushhour {
     // the predecessor tracing method, implemented using recursion for brevity;
     // guaranteed no infinite recursion, but may throw StackOverflowError on
     // really long shortest-path trace (which is infeasible in standard Rush Hour)
-//    static int trace(String current) {
-//        String prev = pred.get(current);
-//        int step = (prev == null) ? 0 : trace(prev) + 1;
-//        System.out.println(step);
-//        System.out.println(prettify(current));
-//        return step;
-//    }
-
     static String trace(String current) {
         String prev = pred.get(current);
-        String step = (prev == null) ? "Starting Board" : trace(prev) + boardDiff(prev, current);
+        String step = (prev == null) ? "" : trace(prev) + boardDiff(prev, current);
         System.out.println(step);
+        route.add(step);
+        System.out.println(route);
         step = "";
         System.out.println(prettify(current));
         return step;
@@ -196,18 +178,6 @@ public class rushhour {
         return diff;
     }
 
-    // in a given state, from a given origin coordinate, attempts to find a car of a given type
-    // at a given distance in a given direction; if found, slide it in the opposite direction
-    // one spot at a time, exactly n times, proposing those states to the breadth first search
-    //
-    // e.g.
-    //    direction = -->
-    //    __n__
-    //   /     \
-    //   ..o....c
-    //      \___/
-    //      distance
-    //
     static void slide(String current, int r, int c, String type, int distance, int dr, int dc, int n) {
         r += distance * dr;
         c += distance * dc;
@@ -225,18 +195,6 @@ public class rushhour {
         }
     }
 
-    // explores a given state; searches for next level states in the breadth first search
-    //
-    // Let (r,c) be the intersection point of this cross:
-    //
-    //     @       nU = 3     '@' is not a car, 'B' and 'X' are of the wrong type;
-    //     .       nD = 1     only '2' can slide to the right up to 5 spaces
-    //   2.....B   nL = 2
-    //     X       nR = 4
-    //
-    // The n? counts how many spaces are there in a given direction, origin inclusive.
-    // Cars matching the type will then slide on these "alleys".
-    //
     static void explore(String current) {
         for (int r = 0; r < M; r++) {
             for (int c = 0; c < N; c++) {
@@ -276,10 +234,8 @@ public class rushhour {
             }
 
 
-            //if(car != board[i][j] && board[i][j] != '.'){
             for(int i = 0; i < board.length; i++){
                 for(int j = 0; j < board[i].length; j++){
-//                    if(car != board[i][j] && board[i][j] != '.'){
                     String s = String.valueOf(board[i][j]);
                     if(!hor.contains(s) && !ver.contains(s) && board[i][j] != '.'){
                         car = board[i][j];
@@ -319,10 +275,7 @@ public class rushhour {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        rushhour initial = new rushhour("A03.txt");
-        // typical queue-based breadth first search implementation
-//        propose(INITIAL, null);
+    public static void BFS() throws Exception {
         propose(init, null);
         boolean solved = false;
         while (!queue.isEmpty()) {
@@ -336,4 +289,16 @@ public class rushhour {
         }
         System.out.println(pred.size() + " explored");
     }
+
+    public static ArrayList<String> getRoute() {
+        return route;
+    }
+
+    public static void main(String[] args) throws Exception {
+        rushhour initial = new rushhour("A00.txt");
+        // typical queue-based breadth first search implementation
+//        propose(INITIAL, null);
+        initial.BFS();
+    }
+
 }
