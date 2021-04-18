@@ -33,36 +33,66 @@ public class rushhour {
     //represents out of bound
     static final char outOfBound = '@';
 
+    /**
+     * @param r create a solution file (i.e. "A00Sol.txt")
+     */
     static int rowTrans(int r, int c) {
         return r * maxLength + c;
     }
 
-    //Verifies the car size
-    static boolean isType(char entity, String type) {
-        return type.indexOf(entity) != -1;
+    /**
+     * Check car's orientation
+     * @param car a car on the board
+     * @param type hor, ver, sizeThree, sizeTwo
+     */
+    static boolean check(char car, String type) {
+        return type.indexOf(car) != -1;
     }
 
-    //Calculates the size of a car
+    /**
+     * @param car takes in a car from the current state
+     * Calculates the size of a given car
+     */
     static int findLength(char car) {
-        return isType(car, sizeThree) ? 3 : isType(car, sizeTwo) ? 2 : 0/0;
+        return check(car, sizeThree) ? 3 : check(car, sizeTwo) ? 2 : 0/0;
     }
 
-    //Get a car that is residing at the provided coordinates in the provided state
+    /**
+     * @param state takes in the current state
+     * @param row y coordinate of a car
+     * @param column x coordinate of a car
+     * Get a car that is residing at the provided coordinates in the provided state
+     */
     static char at(String state, int row, int column) {
         return (inBound(row, maxHeight) && inBound(column, maxLength)) ? state.charAt(rowTrans(row, column)) : outOfBound;
     }
 
-    static boolean inBound(int v, int maximum) {
-        return (v >= 0) && (v < maximum);
+    /**
+     * @param coord coordinate of a car
+     * @param maximum boundary of the board
+     * checks if car's coordinate is out of boundary
+     */
+    static boolean inBound(int coord, int maximum) {
+        return (coord >= 0) && (coord < maximum);
     }
 
-    // checks if a given state is a goal state
+    /**
+     * @param state current state
+     * checks if the current state is a goal state
+     */
     static boolean isGoal(String state) {
         return at(state, xCordGoal, yCordGoal) == target;
     }
 
-    // in a given state, starting from given coordinate, toward the given direction,
-    // counts how many empty spaces there are (origin inclusive)
+    /**
+     * @param state current state
+     * @param rowNum y coordinate of a car
+     * @param columnNum x coordinate of a car
+     * @param dRow direction of the row
+     * @param dColumn direction of the column
+     * in the provided state, calculates the number of empty spaces (origin inclusive)
+     * between the provided coordinate and provided direction
+     */
     static int countSpaces(String state, int rowNum, int columnNum, int dRow, int dColumn) {
         int k = 0;
         while (at(state, rowNum + k * dRow, columnNum + k * dColumn) == unoccupied) {
@@ -94,8 +124,11 @@ public class rushhour {
     static String boardDiff(String prev, String current) {
         String diff = null;
 
+        //if prev is not null, proceed to splitting prev into 6 strings so that they can be stored in an arraylist
+        //if it is, then there was no move; therefore, diff remains null
         if(prev != null) {
 
+            //split prev into 6 strings
             String prevOne = prev.substring(0, 6);
             String prevTwo = prev.substring(6, 12);
             String prevThree = prev.substring(12, 18);
@@ -103,6 +136,7 @@ public class rushhour {
             String prevFive = prev.substring(24, 30);
             String prevSix = prev.substring(30, 36);
 
+            //split current into 6 strings
             String currOne = current.substring(0, 6);
             String currTwo = current.substring(6, 12);
             String currThree = current.substring(12, 18);
@@ -110,6 +144,7 @@ public class rushhour {
             String currFive = current.substring(24, 30);
             String currSix = current.substring(30, 36);
 
+            //add 6 split strings to an arraylist
             ArrayList<String> board1 = new ArrayList<>();
             board1.add(prevOne);
             board1.add(prevTwo);
@@ -118,6 +153,7 @@ public class rushhour {
             board1.add(prevFive);
             board1.add(prevSix);
 
+            //add 6 split strings to an arraylist
             ArrayList<String> board2 = new ArrayList<>();
             board2.add(currOne);
             board2.add(currTwo);
@@ -126,8 +162,11 @@ public class rushhour {
             board2.add(currFive);
             board2.add(currSix);
 
+            //store a car moved
             char movedCar = ' ';
+            //store the direction of the move
             char dir = ' ';
+            //use as the condition to only check once for a car
             boolean checkDode = false;
 
             while (!checkDode) {
@@ -137,27 +176,37 @@ public class rushhour {
                     for (int j = 0; j < board1.size(); j++) {
                         if (compare1[j] != compare2[j]) {
                             if (compare2[j] == '.') {
+                                //if compared coordinate of current is empty, then a car of prev at the given coordinate is moved
                                 movedCar = compare1[j];
                                 if (!checkDode) {
+                                    //if the right of given coordinate in the current is the same car as the moved car
+                                    //then car is moved to right
                                     if (j != 5 && compare2[j + 1] == movedCar) {
                                         dir = 'R';
                                         checkDode = true;
                                         break;
                                     }
+                                    //if a car at the given coordinate in prev is the moved car
+                                    //then car is moved downward
                                     if (compare1[j] == movedCar) {
                                         dir = 'D';
                                         checkDode = true;
                                     }
                                 }
                             }
+                            //if compared coordinate of current is not empty, then a car of current at the given coordinate is moved
                             if (compare2[j] != '.') {
                                 movedCar = compare2[j];
                                 if (!checkDode) {
+                                    //if the right of given coordinate in the prev is the same car as the moved car
+                                    //then car is moved to left
                                     if (j != 5 && compare1[j + 1] == movedCar) {
                                         dir = 'L';
                                         checkDode = true;
                                         break;
                                     }
+                                    //if a car at the given coordinate in prev is not the moved car
+                                    //then car is moved upward
                                     if (compare1[j] != movedCar) {
                                         dir = 'U';
                                         checkDode = true;
@@ -181,7 +230,7 @@ public class rushhour {
         row += distance * rowDirection;
         column += distance * columnDirection;
         char car = at(current, row, column);
-        if (!isType(car, type)) return;
+        if (!check(car, type)) return;
         final int length = findLength(car);
         StringBuilder sb = new StringBuilder(current);
         for (int i = 0; i < n; i++) {
