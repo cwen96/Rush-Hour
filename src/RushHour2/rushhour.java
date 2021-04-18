@@ -3,20 +3,19 @@ import java.io.*;
 import java.util.*;
 
 public class rushhour {
-    // classic Rush Hour parameters
     static final int N = 6;
     static final int M = 6;
-    static final int GOAL_R = 2;
-    static final int GOAL_C = 5;
+    static final int XCORGOAL = 2;
+    static final int YCORGOAL = 5;
     static String init = "";
     static String hor = "";
     static String ver = "";
     static String longs = "";
     static String shorts = "";
     static ArrayList<String> route = new ArrayList<>();
-    static final char GOAL_CAR = 'X';
-    static final char unoccupied = '.';      // empty space, movable into
-    static final char VOID = '@';       // represents everything out of bound
+    static final char target = 'X';
+    static final char unoccupied = '.';
+    static final char outOfBound = '@';
 
     // conventional row major 2D-1D index transformation
     static int rc2i(int r, int c) {
@@ -30,15 +29,12 @@ public class rushhour {
 
     // finds the length of a car
     static int length(char car) {
-        return
-                isType(car, longs) ? 3 :
-                        isType(car, shorts) ? 2 :
-                                0/0; // a nasty shortcut for throwing IllegalArgumentException
+        return isType(car, longs) ? 3 : isType(car, shorts) ? 2 : 0/0;
     }
 
     // in given state, returns the entity at a given coordinate, possibly out of bound
     static char at(String state, int r, int c) {
-        return (inBound(r, M) && inBound(c, N)) ? state.charAt(rc2i(r, c)) : VOID;
+        return (inBound(r, M) && inBound(c, N)) ? state.charAt(rc2i(r, c)) : outOfBound;
     }
     static boolean inBound(int v, int max) {
         return (v >= 0) && (v < max);
@@ -46,7 +42,7 @@ public class rushhour {
 
     // checks if a given state is a goal state
     static boolean isGoal(String state) {
-        return at(state, GOAL_R, GOAL_C) == GOAL_CAR;
+        return at(state, XCORGOAL, YCORGOAL) == target;
     }
 
     // in a given state, starting from given coordinate, toward the given direction,
