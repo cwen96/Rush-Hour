@@ -104,6 +104,12 @@ public class rushhour {
         }
     }
 
+    /**
+     * Check car's orientation
+     * @param row y coordinate of a car
+     * @param column x coordinate of a car
+     * parses a file into the readable matrix representation
+     */
     static int rowTrans(int row, int column) {
         return row * maxLength + column;
     }
