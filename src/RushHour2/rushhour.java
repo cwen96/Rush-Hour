@@ -320,7 +320,7 @@ public class rushhour {
     }
 
     public static void main(String[] args) throws Exception {
-        rushhour initial = new rushhour("A00.txt");
+        rushhour initial = new rushhour("A03.txt");
         // typical queue-based breadth first search implementation
 //        propose(INITIAL, null);
         propose(init, null);
